@@ -4,15 +4,30 @@ plugins {
   kotlin("jvm") version "1.9.21"
   kotlin("plugin.serialization") version "1.9.21"
   id("org.jetbrains.compose") version "1.5.11"
-  id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
+//  id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
 }
 
-configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-  additionalEditorconfig.set(
-    mapOf(
-      "indent_size" to "2",
-    ),
-  )
+//configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+//  additionalEditorconfig.set(
+//    mapOf(
+//      "indent_size" to "2",
+//    ),
+//  )
+//}
+
+tasks.jar {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  manifest {
+    attributes["Main-Class"] = "MainKt"
+  }
+
+  from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }) {
+    excludes.add("META-INF/*.SF")
+    excludes.add("META-INF/*.DSA")
+    excludes.add("META-INF/*.RSA")
+  }
+
+  archiveFileName.set("stock-1.0.0.jar")
 }
 
 group = "com.stockapp"
