@@ -11,3 +11,6 @@ TODO in next iter:
 
 to run:
 1. with gradle: ./gradlew run
+2. ./gradlew build, then java -jar ${pathtojarfile} (currently: build/libs/stock-1.0.0.jar)
+
+
