@@ -1,0 +1,53 @@
+-- Create the portfolio table
+CREATE TABLE portfolio (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    symbol TEXT NOT NULL,
+    name TEXT NOT NULL,
+    quantity REAL NOT NULL,
+    purchasePrice REAL NOT NULL,
+    purchaseDate INTEGER NOT NULL,
+    notes TEXT
+);
+
+-- Query: Get all portfolio stocks, ordered by purchase date
+selectAll:
+SELECT * FROM portfolio ORDER BY purchaseDate DESC;
+
+-- Query: Get all holdings for a specific symbol
+selectBySymbol:
+SELECT * FROM portfolio WHERE symbol = ? ORDER BY purchaseDate DESC;
+
+-- Query: Get a specific portfolio entry by ID
+selectById:
+SELECT * FROM portfolio WHERE id = ?;
+
+-- Query: Insert a new portfolio entry
+insert:
+INSERT INTO portfolio(symbol, name, quantity, purchasePrice, purchaseDate, notes)
+VALUES (?, ?, ?, ?, ?, ?);
+
+-- Query: Update an existing portfolio entry
+update:
+UPDATE portfolio
+SET quantity = ?, purchasePrice = ?, notes = ?
+WHERE symbol = ?;
+
+-- Query: Delete a portfolio entry
+delete:
+DELETE FROM portfolio WHERE id = ?;
+
+-- Query: Count total portfolio entries
+count:
+SELECT COUNT(*) FROM portfolio;
+
+-- Query: Calculate total investment amount
+totalInvestment:
+SELECT SUM(quantity * purchasePrice) AS total FROM portfolio;
+
+-- Query: Get list of unique symbols in portfolio
+uniqueSymbols:
+SELECT DISTINCT symbol FROM portfolio ORDER BY symbol;
+
+-- Query: Get total quantity for a specific symbol
+totalQuantityBySymbol:
+SELECT COALESCE(SUM(quantity), 0.0) AS total FROM portfolio WHERE symbol = ?;

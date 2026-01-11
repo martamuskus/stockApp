@@ -1,6 +1,6 @@
-package analytics
+package com.stockapp.analytics
 
-import PricePoint
+import com.stockapp.ui.PricePoint
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -114,7 +114,7 @@ class StockAnalytics {
       low = prices.minOrNull() ?: 0.0,
       high = prices.maxOrNull() ?: 0.0,
       average = prices.average(),
-      median = if (isEvenLen) sorted[len / 2] + sorted[len / 2 - 1] else sorted[len / 2],
+      median = if (isEvenLen) (sorted[len / 2] + sorted[len / 2 - 1]) / 2 else sorted[len / 2],
     )
   }
 

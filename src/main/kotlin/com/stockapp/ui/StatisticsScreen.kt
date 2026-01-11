@@ -1,5 +1,7 @@
-import analytics.StockAnalytics
-import analytics.StockStatistics
+package com.stockapp.ui
+
+import com.stockapp.analytics.StockAnalytics
+import com.stockapp.analytics.StockStatistics
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +21,7 @@ fun statisticsScreen(api: AlphaVantageApi) {
   var symbol by remember { mutableStateOf("AAPL") }
   var statistics by remember { mutableStateOf<StockStatistics?>(null) }
   var isLoading by remember { mutableStateOf(false) }
+  var isCorrect by remember {mutableStateOf(true)}
   var error by remember { mutableStateOf<String?>(null) }
   val scope = rememberCoroutineScope()
   val analytics = remember { StockAnalytics() }
@@ -48,21 +51,28 @@ fun statisticsScreen(api: AlphaVantageApi) {
             error = null
 
             // loading daily data to analize
-            val response = api.getTimeSeries(symbol, "compact")
-            val priceData =
-              response.timeSeries.map { (date, data) ->
-                PricePoint(
-                  date = LocalDate.parse(date),
-                  open = data.open.toDouble(),
-                  high = data.high.toDouble(),
-                  low = data.low.toDouble(),
-                  close = data.close.toDouble(),
-                  volume = data.volume.toLong(),
-                )
-              }.sortedBy { it.date }
-            statistics = analytics.calculateStatistics(symbol, priceData)
-
-            isLoading = false
+            try {
+              val response = api.getTimeSeries(symbol, "compact")
+              val priceData =
+                response.timeSeries.map { (date, data) ->
+                  PricePoint(
+                    date = LocalDate.parse(date),
+                    open = data.open.toDouble(),
+                    high = data.high.toDouble(),
+                    low = data.low.toDouble(),
+                    close = data.close.toDouble(),
+                    volume = data.volume.toLong(),
+                  )
+                }.sortedBy { it.date }
+              statistics = analytics.calculateStatistics(symbol, priceData)
+            }
+            catch (e: Exception) {
+              isCorrect = false
+              error = "Incorrect stock symbol"
+            }
+            finally {
+              isLoading = false
+            }
           }
         },
         enabled = !isLoading && symbol.isNotBlank(),
@@ -72,6 +82,21 @@ fun statisticsScreen(api: AlphaVantageApi) {
     }
 
     Spacer(modifier = Modifier.height(16.dp))
+    if (error != null) {
+    Card(
+      modifier = Modifier.fillMaxWidth(),
+      colors =
+        CardDefaults.cardColors(
+          containerColor = MaterialTheme.colorScheme.errorContainer,
+        ),
+    ) {
+      Text(
+        text = error ?: "",
+        modifier = Modifier.padding(16.dp),
+        color = MaterialTheme.colorScheme.onErrorContainer,
+      )
+    }
+  }
 
     when {
       isLoading -> {
@@ -82,21 +107,8 @@ fun statisticsScreen(api: AlphaVantageApi) {
           CircularProgressIndicator()
         }
       }
-      error != null -> {
-        Card(
-          colors =
-            CardDefaults.cardColors(
-              containerColor = MaterialTheme.colorScheme.errorContainer,
-            ),
-        ) {
-          Text(
-            text = error ?: "",
-            modifier = Modifier.padding(16.dp),
-            color = MaterialTheme.colorScheme.onErrorContainer,
-          )
-        }
-      }
-      statistics != null -> {
+
+      statistics != null && error == null -> {
         statisticsContent(statistics!!)
       }
       else -> {
@@ -156,7 +168,7 @@ fun statisticsContent(stats: StockStatistics) {
 
     // volatility
     statsCard(title = "Volatility & Risk") {
-      statRow("Daily analytics.Volatility", "%.2f%%".format(stats.volatility.dailyStdDev))
+      statRow("Daily com.stockapp.analytics.Volatility", "%.2f%%".format(stats.volatility.dailyStdDev))
       statRow("Coefficient of Variation", "%.2f%%".format(stats.volatility.coefficientOfVariation))
     }
 

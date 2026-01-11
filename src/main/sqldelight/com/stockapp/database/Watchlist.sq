@@ -1,0 +1,31 @@
+CREATE TABLE watchlist (
+    symbol TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    addedDate INTEGER NOT NULL,
+    notes TEXT
+);
+
+-- Query: Get all stocks in watchlist, ordered by date added
+selectAll:
+SELECT * FROM watchlist ORDER BY addedDate DESC;
+
+-- Query: Get a specific stock by symbol
+selectBySymbol:
+SELECT * FROM watchlist WHERE symbol = ?;
+
+-- Query: Insert or replace a stock in watchlist
+insert:
+INSERT OR REPLACE INTO watchlist(symbol, name, addedDate, notes)
+VALUES (?, ?, ?, ?);
+
+-- Query: Delete a stock from watchlist
+delete:
+DELETE FROM watchlist WHERE symbol = ?;
+
+-- Query: Check if a stock is in the watchlist
+isInWatchlist:
+SELECT EXISTS(SELECT 1 FROM watchlist WHERE symbol = ?);
+
+-- Query: Count total stocks in watchlist
+count:
+SELECT COUNT(*) FROM watchlist;
