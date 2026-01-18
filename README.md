@@ -16,6 +16,7 @@ To run the app:
 1. with gradle: ./gradlew run
 
 or
+
 2. ./gradlew build | java -jar ${pathtojarfile} (currently: build/libs/stock-1.0.0.jar)
 
 ## What can the app do?
