@@ -1,5 +1,6 @@
 package com.stockapp.ui
 
+import config.ApiConfig
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -127,7 +128,6 @@ fun createAlphaVantageApi(): AlphaVantageApi {
       }
     }
 
-  val apiKey = "OWVXMI70WUJBBFB2" // absolutely not ideal approach
-
+  val apiKey = ApiConfig.apiKey
   return AlphaVantageApi(client, apiKey)
 }
